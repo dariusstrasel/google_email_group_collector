@@ -1,0 +1,9 @@
+# Client Secret:
+client_secret.json
+
+# Default Folders/Files:
+output/
+groups.csv
+mycsvfile.csv
+result.json
+temp.py
