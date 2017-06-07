@@ -24,6 +24,12 @@ CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Directory API Python Quickstart'
 
 
+class debug_print:
+    """Prints a message passed thru the constructor method while appending a timestamp to the beginning message."""
+    def __init__(self, text):
+        print("%s: %s" % (datetime.datetime.now(), text))
+
+
 def get_credentials():
     """Gets valid user credentials from storage.
 
@@ -55,18 +61,17 @@ def get_credentials():
 
 def get_domain_groups(authentication):
     service = discovery.build('admin', 'directory_v1', http=authentication)
-
-    print('%s: Getting all email groups in the domain' % (datetime.datetime.now()))
+    debug_print('Getting all email groups in the domain')
     results = service.groups().list(domain='preventure.com', maxResults=200).execute()
     groups = results.get('groups', [])
     results_object = []
 
     if not groups:
-        print('%s: No groups in the domain.' % (datetime.datetime.now()))
+        debug_print('No groups in the domain.')
     else:
-        print("%s: Detected %s email groups." % (datetime.datetime.now(), len(groups)))
+        debug_print("Detected %s email groups." % (len(groups)))
         for group in groups:
-            print("%s: >>>Email: %s, Size: %s" % (datetime.datetime.now(), group.get('email'), group.get("directMembersCount")))
+            debug_print(">>>Email: %s, Size: %s" % (group.get('email'), group.get("directMembersCount")))
             group_members = get_group_members(authentication, group.get('email'))
             results_object.append([group.get('name'), group.get('email'), group.get('description'), {'size': group.get("directMembersCount")}, {'aliases': group.get("aliases")}, group_members])
             break
@@ -81,7 +86,7 @@ def get_group_members(authentication, group_email):
 
     result = []
     if not members:
-        print('%s: No members in the email group: %s' % (datetime.datetime.now(), group_email))
+        debug_print('No members in the email group: %s' % (group_email))
         return []
     else:
         if group_email:
@@ -108,7 +113,7 @@ def export_data_to_csv(data):
                 except KeyError:
                     groupwriter.writerow([group['name'], group['email'], group['description'], group["directMembersCount"]])
     except PermissionError:
-        print("Cannot access csv file.")
+        debug_print("Cannot access csv file.")
         raise
 
 
